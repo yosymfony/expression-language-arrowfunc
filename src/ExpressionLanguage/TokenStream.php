@@ -88,10 +88,7 @@ class TokenStream extends \Symfony\Component\ExpressionLanguage\TokenStream
         }
 
         if (!isset($this->tokens[$this->position])) {
-            throw new SyntaxError(
-                sprintf('Cannot seek to %s of expression', $this->position > 0 ? 'beyond end' : 'before start'),
-                $this->position
-            );
+            throw new SyntaxError(sprintf('Cannot seek to %s of expression', $this->position > 0 ? 'beyond end' : 'before start'), $this->position);
         }
 
         $this->current = $this->tokens[$this->position];
@@ -122,17 +119,7 @@ class TokenStream extends \Symfony\Component\ExpressionLanguage\TokenStream
     {
         $token = $this->current;
         if (!$token->test($type, $value)) {
-            throw new SyntaxError(
-                sprintf(
-                    '%sUnexpected token "%s" of value "%s" ("%s" expected%s)',
-                    $message ? $message . '. ' : '',
-                    $token->type,
-                    $token->value,
-                    $type,
-                    $value ? sprintf(' with value "%s"', $value) : ''
-                ),
-                $token->cursor
-            );
+            throw new SyntaxError(sprintf('%sUnexpected token "%s" of value "%s" ("%s" expected%s)', $message ? $message . '. ' : '', $token->type, $token->value, $type, $value ? sprintf(' with value "%s"', $value) : ''), $token->cursor);
         }
         $this->prev();
     }
@@ -140,8 +127,8 @@ class TokenStream extends \Symfony\Component\ExpressionLanguage\TokenStream
     /**
      * Returns new TokenStream with tokens replaced by some others.
      *
-     * @param int   $offset
-     * @param int   $length
+     * @param int     $offset
+     * @param int     $length
      * @param Token[] $replacements
      *
      * @return static
@@ -156,8 +143,6 @@ class TokenStream extends \Symfony\Component\ExpressionLanguage\TokenStream
 
     /**
      * Returns the current position.
-     *
-     * @return int
      */
     public function position(): int
     {

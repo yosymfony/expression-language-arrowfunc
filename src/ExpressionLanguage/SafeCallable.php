@@ -27,9 +27,6 @@ class SafeCallable
         $this->callback = $callback;
     }
 
-    /**
-     * @return callable
-     */
     public function getCallback(): callable
     {
         return $this->callback;
@@ -47,8 +44,6 @@ class SafeCallable
 
     /**
      * Call the callback with the provided arguments and returns result.
-     *
-     * @param array $arguments
      *
      * @return mixed
      */

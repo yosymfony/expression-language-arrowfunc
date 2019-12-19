@@ -13,11 +13,12 @@ class ExpressionLanguage extends SymfonyExpressionLanguage
 
     /**
      * {@inheritdoc}
+     *
      * @throws ReflectionException
      */
-    public function __construct($cache = null, array $providers = array())
+    public function __construct($cache = null, array $providers = [])
     {
-        $this->parser = new Parser(array());
+        $this->parser = new Parser([]);
 
         parent::__construct($cache, $providers);
 

@@ -2,8 +2,8 @@
 
 namespace uuf6429\ExpressionLanguage;
 
-use Symfony\Component\ExpressionLanguage\Token;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
+use Symfony\Component\ExpressionLanguage\Token;
 
 class Lexer extends \Symfony\Component\ExpressionLanguage\Lexer
 {
@@ -12,10 +12,10 @@ class Lexer extends \Symfony\Component\ExpressionLanguage\Lexer
      */
     public function tokenize($expression)
     {
-        $expression = str_replace(array("\r", "\n", "\t", "\v", "\f"), ' ', $expression);
+        $expression = str_replace(["\r", "\n", "\t", "\v", "\f"], ' ', $expression);
         $cursor = 0;
-        $tokens = array();
-        $brackets = array();
+        $tokens = [];
+        $brackets = [];
         $end = strlen($expression);
 
         while ($cursor < $end) {
@@ -35,7 +35,7 @@ class Lexer extends \Symfony\Component\ExpressionLanguage\Lexer
                 $cursor += strlen($match[0]);
             } elseif (false !== strpos('([{', $expression[$cursor])) {
                 // opening bracket
-                $brackets[] = array($expression[$cursor], $cursor);
+                $brackets[] = [$expression[$cursor], $cursor];
 
                 $tokens[] = new Token(Token::PUNCTUATION_TYPE, $expression[$cursor], $cursor + 1);
                 ++$cursor;

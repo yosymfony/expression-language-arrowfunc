@@ -2,9 +2,9 @@
 
 namespace uuf6429\ExpressionLanguage\Node;
 
+use Symfony\Component\ExpressionLanguage\Compiler;
 use Symfony\Component\ExpressionLanguage\Node\NameNode;
 use Symfony\Component\ExpressionLanguage\Node\Node;
-use Symfony\Component\ExpressionLanguage\Compiler;
 use uuf6429\ExpressionLanguage\SafeCallable;
 
 /**
@@ -21,15 +21,14 @@ class ArrowFuncNode extends Node
 
     /**
      * @param NameNode[] $parameters
-     * @param Node|null $body
      */
     public function __construct(array $parameters, Node $body = null)
     {
         parent::__construct(
-            array(
+            [
                 'parameters' => $parameters,
                 'body' => $body,
-            )
+            ]
         );
 
         if (!self::$noopSafeCallable) {
@@ -40,7 +39,7 @@ class ArrowFuncNode extends Node
 
     public function compile(Compiler $compiler): void
     {
-        $arguments = array();
+        $arguments = [];
 
         foreach ($this->nodes['parameters'] as $parameterNode) {
             $arguments[] = $compiler->subcompile($parameterNode);
@@ -64,7 +63,7 @@ class ArrowFuncNode extends Node
             return self::$noopSafeCallable;
         }
 
-        $paramNames = array();
+        $paramNames = [];
 
         foreach ($this->nodes['parameters'] as $parameterNode) {
             /** @var NameNode $parameterNode */
@@ -74,7 +73,18 @@ class ArrowFuncNode extends Node
 
         return new SafeCallable(
             static function () use ($functions, $paramNames, $bodyNode) {
-                $passedValues = array_combine($paramNames, func_get_args());
+                $args = func_get_args();
+
+                if (count($paramNames) > count($args)) {
+                    throw new \BadFunctionCallException('Invalid arrow function call: too many parameters.');
+                }
+
+                $passedValues = [];
+                $argIndex = 0;
+                foreach ($paramNames as $paramName) {
+                    $passedValues[$paramName] = $args[$argIndex];
+                    ++$argIndex;
+                }
 
                 return $bodyNode->evaluate($functions, $passedValues);
             }
@@ -83,7 +93,7 @@ class ArrowFuncNode extends Node
 
     public function toArray()
     {
-        $array = array();
+        $array = [];
 
         foreach ($this->nodes['parameters'] as $node) {
             $array[] = ', ';

@@ -4,23 +4,23 @@ namespace uuf6429\ExpressionLanguage\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ExpressionLanguage\Compiler;
+use Symfony\Component\ExpressionLanguage\Node\BinaryNode;
+use Symfony\Component\ExpressionLanguage\Node\ConstantNode;
+use Symfony\Component\ExpressionLanguage\Node\NameNode;
 use uuf6429\ExpressionLanguage\Node\ArrowFuncNode;
 use uuf6429\ExpressionLanguage\SafeCallable;
-use Symfony\Component\ExpressionLanguage\Node\BinaryNode;
-use Symfony\Component\ExpressionLanguage\Node\NameNode;
-use Symfony\Component\ExpressionLanguage\Node\ConstantNode;
 
 class ArrowFuncNodeTest extends TestCase
 {
     /**
      * @param $expectedResult
      * @param ArrowFuncNode $node
-     * @param array $variables
-     * @param array $functions
+     * @param array         $variables
+     * @param array         $functions
      *
      * @dataProvider getEvaluateData
      */
-    public function testEvaluate($expectedResult, $node, $variables = array(), $functions = array()): void
+    public function testEvaluate($expectedResult, $node, $variables = [], $functions = []): void
     {
         $safeCallback = $node->evaluate($functions, $variables);
         $this->assertInstanceOf(SafeCallable::class, $safeCallback);
@@ -32,46 +32,42 @@ class ArrowFuncNodeTest extends TestCase
 
     public function getEvaluateData(): array
     {
-        return array(
-            'parameterless call, null result' => array(
+        return [
+            'parameterless call, null result' => [
                 null,
                 new ArrowFuncNode(
-                    array(),
+                    [],
                     null
                 ),
-            ),
-            'one parameter, returned' => array(
+            ],
+            'one parameter, returned' => [
                 123,
                 new ArrowFuncNode(
-                    array(new NameNode('foo')),
+                    [new NameNode('foo')],
                     new NameNode('foo')
                 ),
-                array('foovalue' => 123),
-            ),
-            'two parameters, multiplied and result returned' => array(
+                ['foovalue' => 123],
+            ],
+            'two parameters, multiplied and result returned' => [
                 246,
                 new ArrowFuncNode(
-                    array(new NameNode('foo'), new NameNode('bar')),
+                    [new NameNode('foo'), new NameNode('bar')],
                     new BinaryNode('*', new NameNode('foo'), new NameNode('bar'))
                 ),
-                array('foovalue' => 123, 'barvalue' => 2),
-            ),
-            'one unused parameter, returns literal' => array(
+                ['foovalue' => 123, 'barvalue' => 2],
+            ],
+            'one unused parameter, returns literal' => [
                 890,
                 new ArrowFuncNode(
-                    array(new NameNode('foo')),
+                    [new NameNode('foo')],
                     new ConstantNode(890)
                 ),
-                array('foovalue' => 123),
-            ),
-        );
+                ['foovalue' => 123],
+            ],
+        ];
     }
 
     /**
-     * @param string $expected
-     * @param ArrowFuncNode $node
-     * @param array $functions
-     *
      * @dataProvider getCompileData
      */
     public function testCompile(string $expected, ArrowFuncNode $node, array $functions = []): void
@@ -83,35 +79,32 @@ class ArrowFuncNodeTest extends TestCase
 
     public function getCompileData(): array
     {
-        return array(
-            array(
+        return [
+            [
                 'function () { return null; }',
                 new ArrowFuncNode(
-                    array(),
+                    [],
                     null
                 ),
-            ),
-            array(
+            ],
+            [
                 'function ($foo) { return $foo; }',
                 new ArrowFuncNode(
-                    array(new NameNode('foo')),
+                    [new NameNode('foo')],
                     new NameNode('foo')
                 ),
-            ),
-            array(
+            ],
+            [
                 'function ($foo, $bar) { return ($foo * $bar); }',
                 new ArrowFuncNode(
-                    array(new NameNode('foo'), new NameNode('bar')),
+                    [new NameNode('foo'), new NameNode('bar')],
                     new BinaryNode('*', new NameNode('foo'), new NameNode('bar'))
                 ),
-            ),
-        );
+            ],
+        ];
     }
 
     /**
-     * @param string $expected
-     * @param ArrowFuncNode $node
-     *
      * @dataProvider getDumpData
      */
     public function testDump(string $expected, ArrowFuncNode $node): void
@@ -121,35 +114,35 @@ class ArrowFuncNodeTest extends TestCase
 
     public function getDumpData(): array
     {
-        return array(
-            array(
+        return [
+            [
                 '() -> {}',
                 new ArrowFuncNode(
-                    array(),
+                    [],
                     null
                 ),
-            ),
-            array(
+            ],
+            [
                 '(foo) -> {foo}',
                 new ArrowFuncNode(
-                    array(new NameNode('foo')),
+                    [new NameNode('foo')],
                     new NameNode('foo')
                 ),
-            ),
-            array(
+            ],
+            [
                 '(foo) -> {"bar"}',
                 new ArrowFuncNode(
-                    array(new NameNode('foo')),
+                    [new NameNode('foo')],
                     new ConstantNode('bar')
                 ),
-            ),
-            array(
+            ],
+            [
                 '(foo, bar) -> {(foo * bar)}',
                 new ArrowFuncNode(
-                    array(new NameNode('foo'), new NameNode('bar')),
+                    [new NameNode('foo'), new NameNode('bar')],
                     new BinaryNode('*', new NameNode('foo'), new NameNode('bar'))
                 ),
-            ),
-        );
+            ],
+        ];
     }
 }
